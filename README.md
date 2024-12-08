@@ -1,4 +1,4 @@
-# WebSocket-Chat-Server
+# Order-Book
 
 Default build:
 
@@ -10,4 +10,4 @@ With a custom compiler:
 
 Run:
 
-      ./bazel-bin/server/server market_feed.json
+      ./bazel-bin/server/server order_book.json
