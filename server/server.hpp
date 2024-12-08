@@ -75,7 +75,6 @@ public:
             orderBook_.processOrder(order);
 
             // Send the updated order book to all clients
-
             sendOrderBook();
         }
         catch (const std::exception &e) {

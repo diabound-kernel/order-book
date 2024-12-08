@@ -27,19 +27,16 @@ public:
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        // Directly match the order (Market)
+        // Directly match the order (Market only)
         tryToMatch(order);
 
-        if (order.type == Type::Limit) {
-            // Add to order book if unfulfilled
-
-            if (order.quantity > 0) {
-                if (order.side == Side::Buy) {
-                    bids_.insert(order);
-                }
-                else {
-                    asks_.insert(order);
-                }
+        // Add to order book if unfulfilled (Limit only)
+        if (order.type == Type::Limit && order.quantity > 0) {
+            if (order.side == Side::Buy) {
+                bids_.insert(order);
+            }
+            else {
+                asks_.insert(order);
             }
         }
     }
@@ -61,7 +58,7 @@ public:
         auto it = otherSide.begin();
         while (it != otherSide.end() && order.quantity > 0) {
             if (order.type == Type::Market || cmp(order.price, it->price)) {
-                // Match with an ask order
+                // Match with an other side order
                 auto tradedQty = std::min(order.quantity, it->quantity);
 
                 auto tradeTimestamp =
