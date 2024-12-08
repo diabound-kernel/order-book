@@ -39,7 +39,7 @@ void initOrderBook(OrderBook &orderBook, const std::string filename)
     for (std::string line; std::getline(istrmMarketFeed, line);) {
         auto order = decodeJSON<Order>(line);
 
-        orderBook.addOrder(order);
+        orderBook.processOrder(order);
     }
 }
 

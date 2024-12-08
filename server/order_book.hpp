@@ -23,17 +23,15 @@ struct TradingHistroy
 class OrderBook
 {
 public:
-    void addOrder(Order &order)
+    void processOrder(Order &order)
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        if (order.type == Type::Market) {
-            // Directly match the order
-            tryToMatch(order);
-        }
-        else {
-            // Try to match and then add to order book if unfulfilled
-            tryToMatch(order);
+        // Directly match the order (Market)
+        tryToMatch(order);
+
+        if (order.type == Type::Limit) {
+            // Add to order book if unfulfilled
 
             if (order.quantity > 0) {
                 if (order.side == Side::Buy) {
@@ -93,85 +91,6 @@ public:
                 break;
             }
         }
-    }
-
-    // void matchOrder(Order & order)
-    // {
-    //     if (order.side == Side::Buy) {
-    //         auto it = asks_.begin();
-    //         while (it != asks_.end() && order.quantity > 0) {
-    //             if (order.type == Type::Market ||
-    //                 order.price >= it->price) {
-    //                 // Match with an ask order
-    //                 auto tradedQty = std::min(order.quantity,
-    //                 it->quantity);
-    //                 // std::cout << "Matched BUY order " << order.id
-    //                 //           << " with SELL order " << it->id
-    //                 //           << " for quantity " << tradedQty << " at
-    //                 //           price " << it->price << "\n";
-
-    //                 auto tradeTimestamp =
-    //                     std::chrono::duration_cast<std::chrono::seconds>(
-    //                         std::chrono::system_clock::now()
-    //                             .time_since_epoch())
-    //                         .count();
-
-    //                 auto trade = Trade{
-    //                     .price = it->price,
-    //                     .quantity = tradedQty,
-    //                     .timestamp = tradeTimestamp};
-
-    //                 trades_.addTrade(trade);
-
-    //                 std::cout << trade << std::endl;
-
-    //                 order.quantity -= tradedQty;
-    //                 auto ask = *it;
-    //                 asks_.erase(it);
-    //                 ask.quantity -= tradedQty;
-    //                 if (ask.quantity > 0) {
-    //                     asks_.insert(ask);
-    //                 }
-    //                 it = asks_.begin();
-    //             }
-    //             else {
-    //                 break;
-    //             }
-    //         }
-    //     }
-    //     else {  // SELL
-    //         auto it = bids_.begin();
-    //         while (it != bids_.end() && order.quantity > 0) {
-    //             if (order.type == Type::Market ||
-    //                 order.price <= it->price) {
-    //                 // Match with a bid order
-    //                 int tradedQty = std::min(order.quantity,
-    //                 it->quantity);
-    //                 // std::cout << "Matched SELL order " << order.id
-    //                 //           << " with BUY order " << it->id
-    //                 //           << " for quantity " << tradedQty << " at
-    //                 //           price " << it->price << "\n";
-
-    //                 order.quantity -= tradedQty;
-    //                 auto bid = *it;
-    //                 bids_.erase(it);
-    //                 bid.quantity -= tradedQty;
-    //                 if (bid.quantity > 0) {
-    //                     bids_.insert(bid);
-    //                 }
-    //                 it = bids_.begin();
-    //             }
-    //             else {
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-
-    void processOrder(Order &order)
-    {
-        // For simplicity, just add the order to the order book
-        addOrder(order);
     }
 
 public:

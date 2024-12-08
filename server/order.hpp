@@ -11,7 +11,7 @@ using OrderSide = std::uint8_t;
 
 enum Type : std::uint8_t
 {
-    Market = 0,
+    Market,
     Limit
 };
 
@@ -56,7 +56,7 @@ struct Trade
 {
     Price price;
     Quantity quantity;
-    uint64_t timestamp;
+    int64_t timestamp;
 
     GEN_METADATA(price, quantity, timestamp);
 };
