@@ -13,9 +13,8 @@
 #include "order_book.hpp"
 
 // WebSocket session that will handle each client
-class WebSocketSession : public std::enable_shared_from_this<WebSocketSession>
+struct WebSocketSession : public std::enable_shared_from_this<WebSocketSession>
 {
-public:
     WebSocketSession(
         boost::asio::ip::tcp::socket &&socket, OrderBook &orderBook) :
         ws_(std::move(socket)),

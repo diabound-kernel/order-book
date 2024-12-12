@@ -1,0 +1,5 @@
+# ignore ALL JSON files
+*.json
+
+# ignore BAZEL build directories
+bazel-*

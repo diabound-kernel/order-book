@@ -23,7 +23,7 @@ CLIConfig parseCLI(int argc, const char *argv[])
         app.parse(argc, argv);
     }
     catch (const ::CLI::ParseError &e) {
-        info("Bad command line arguments. Error is ", e.get_name());
+        LOG_INFO("Bad command line arguments. Error is ", e.get_name());
         std::exit(app.exit(e));
     }
 

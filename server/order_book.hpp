@@ -20,9 +20,8 @@ struct TradingHistroy
     mutable std::mutex mutex_;
 };
 
-class OrderBook
+struct OrderBook
 {
-public:
     void processOrder(Order &order)
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -55,11 +54,14 @@ public:
     void
     matchOrder(Side_ &side, OtherSide_ &otherSide, Compare cmp, Order &order)
     {
-        auto it = otherSide.begin();
-        while (it != otherSide.end() && order.quantity > 0) {
-            if (order.type == Type::Market || cmp(order.price, it->price)) {
+        auto otherSideOrderIter = otherSide.begin();
+
+        while (otherSideOrderIter != otherSide.end() && order.quantity > 0) {
+            if (order.type == Type::Market ||
+                cmp(order.price, otherSideOrderIter->price)) {
                 // Match with an other side order
-                auto tradedQty = std::min(order.quantity, it->quantity);
+                auto tradedQty =
+                    std::min(order.quantity, otherSideOrderIter->quantity);
 
                 auto tradeTimestamp =
                     std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -67,22 +69,22 @@ public:
                         .count();
 
                 auto trade = Trade{
-                    .price = it->price,
+                    .price = otherSideOrderIter->price,
                     .quantity = tradedQty,
                     .timestamp = tradeTimestamp};
 
                 trades_.addTrade(trade);
 
                 order.quantity -= tradedQty;
-                auto otherSideOrder = *it;
-                otherSide.erase(it);
+                auto otherSideOrder = *otherSideOrderIter;
+                otherSide.erase(otherSideOrderIter);
                 otherSideOrder.quantity -= tradedQty;
 
                 if (otherSideOrder.quantity > 0) {
                     otherSide.insert(otherSideOrder);
                 }
 
-                it = otherSide.begin();
+                otherSideOrderIter = otherSide.begin();
             }
             else {
                 break;
@@ -90,7 +92,6 @@ public:
         }
     }
 
-public:
     std::set<Order, std::greater<Order>> bids_;
     std::set<Order, std::less<Order>> asks_;
     TradingHistroy trades_;
