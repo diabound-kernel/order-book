@@ -153,23 +153,37 @@ ws.onclose = () => {
 };
 
 // Handling the order form submission
+const priceInput = document.getElementById("order-price");
+const typeInput = document.getElementById("type");
+
+typeInput.addEventListener("change", function () {
+    const isMarketOrder = parseInt(typeInput.value) === 0; // 0 for Market Order
+    priceInput.disabled = isMarketOrder; // Disable price input for Market orders
+    if (isMarketOrder) {
+        priceInput.value = ''; // Clear the price field if it's a Market order
+    }
+});
+
 orderForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
     const side = document.getElementById("side").value; // 0 for Buy, 1 for Sell
     const type = document.getElementById("type").value; // 0 for Market, 1 for Limit
-    const price = parseFloat(document.getElementById("order-price").value);
+    const price = parseFloat(priceInput.value);
     const quantity = parseFloat(document.getElementById("order-quantity").value);
 
-    if (isNaN(price) || isNaN(quantity)) {
-        alert("Invalid price or quantity.");
+    if (isNaN(quantity)) {
+        alert("Invalid quantity.");
         return;
     }
+
+    // Default the price to a value if it's a Market order
+    const orderPrice = type === "0" ? 0 : price;
 
     // Create the order data in the desired format
     const orderData = {
         Order: {
-            price: price,
+            price: orderPrice,
             quantity: quantity,
             type: parseInt(type), // Market = 0, Limit = 1
             side: parseInt(side), // Buy = 0, Sell = 1

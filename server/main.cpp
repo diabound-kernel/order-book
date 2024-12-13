@@ -28,7 +28,6 @@ void do_accept(
 // Simulate adding orders to the order book (for demonstration)
 void initOrderBook(OrderBook &orderBook, const std::string filename)
 {
-
     auto istrmMarketFeed = std::ifstream{filename, std::ios::in};
 
     if (!istrmMarketFeed.is_open()) {
